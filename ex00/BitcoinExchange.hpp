@@ -18,6 +18,7 @@ class BitcoinExchange {
         }
 
         bool parseData( void );
+        bool parseInfile(char *infile);
 
     private:
         std::map<std::string, float> _data;

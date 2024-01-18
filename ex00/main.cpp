@@ -10,5 +10,7 @@ int main(int argc, char **argv) {
     }
     BitcoinExchange inst;
     std::cout << std::boolalpha << test.parseData() << std::endl;
+    std::cout << std::boolalpha << test.parseInfile(argv[1]) << std::endl;
+
     return (0);
 }
