@@ -4,37 +4,6 @@
 #include <iomanip>
 #include <sstream>
 
-bool BitcoinExchange::parseData( void ) {
-
-    std::ifstream infile("data.csv");
-    if (infile) {
-        std::string line;
-        getline(infile, line);
-        if (line != "date,exchange_rate") { // check first line of data file
-            infile.close();
-            return false;
-        }
-        while (getline(infile, line)) {
-            if (line.find(',') == std::string::npos) {
-                std::cerr << "Error: wrong format. Format must be \033[3mdate,exchange_rate\033[0m" << std::endl;
-                return false;
-            }
-            std::string date = line.substr(0, line.find(","));
-            std::string value = line.substr(line.find(",") + 1, line.size() - 1);
-            std::stringstream ss(value);
-            double valueDouble;
-            ss >> valueDouble;
-            _data[date] = valueDouble; // add new elem in data std::map
-        }
-        // for (std::map<std::string, float>::iterator it = _data.begin() ; it != _data.end() ; ++it) {
-        //     std::cout << it->first << "," << std::fixed << std::setprecision(2) << it->second << std::endl;
-        // }
-        return true;
-    }
-    infile.close();
-    return false;
-}
-
 bool isdigitRange(std::string date, size_t inf, size_t sup) {
     for (size_t i = inf ; i <= sup ; i++) {
         if (!isdigit(date[i]))
@@ -52,6 +21,41 @@ bool dateFormat(std::string date) {
     if (!isdigitRange(date, 0, 3) || !isdigitRange(date, 5, 6) || !isdigitRange(date, 8, 9))
         return false;
     return true;
+}
+
+bool BitcoinExchange::parseData( void ) {
+
+    std::ifstream infile("data.csv");
+    if (infile) {
+        std::string line;
+        getline(infile, line);
+        if (line != "date,exchange_rate") { // check first line of data file
+            std::cerr << "Error: the database is corrupted. It can not be used." << std::endl;
+            infile.close();
+            return false;
+        }
+        while (getline(infile, line)) {
+            if (line.find(',') == std::string::npos) {
+                std::cerr << "Error: the database is corrupted. It can not be used." << std::endl;
+                return false;
+            }
+            std::string date = line.substr(0, line.find(","));
+            std::string value = line.substr(line.find(",") + 1, line.size() - 1);
+            std::stringstream ss(value);
+            double valueDouble;
+            if (!(ss >> valueDouble) || !ss.eof() || !dateFormat(date)) {
+                std::cerr << "Error: the database is corrupted. It can not be used." << std::endl;
+                return false;
+            }
+            _data[date] = valueDouble; // add new elem in data std::map
+        }
+        // for (std::map<std::string, float>::iterator it = _data.begin() ; it != _data.end() ; ++it) {
+        //     std::cout << it->first << "," << std::fixed << std::setprecision(2) << it->second << std::endl;
+        // }
+        return true;
+    }
+    infile.close();
+    return false;
 }
 
 bool valueFormat(std::string value) {
@@ -72,15 +76,16 @@ bool valueFormat(std::string value) {
     return true;
 }
 
-bool BitcoinExchange::parseInfile(char *infile) {
+void BitcoinExchange::parseInfile(char *infile) {
 
     std::ifstream stream(infile);
     if (stream) {
         std::string line;
         getline(stream, line);
         if (line != "date | value") { // check first line of data file
+            std::cout << "Error: first line of input file must be \033[3mdate | value\033[0m." << std::endl;
             stream.close();
-            return false;
+            return ;
         }
         while (getline(stream, line)) {
             if (line.find(" | ") == std::string::npos) {
@@ -112,7 +117,7 @@ bool BitcoinExchange::parseInfile(char *infile) {
         // for (std::map<std::string, float>::iterator it = _input.begin() ; it != _input.end() ; ++it) {
         //     std::cout << it->first << " | " << it->second << std::endl;
         // }
-        return true;
+        stream.close();
     }
-    return false;
+    std::cout << "Error: can't open input file." << std::endl;
 }
