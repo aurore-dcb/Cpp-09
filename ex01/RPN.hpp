@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <stack>
 #include <iostream>
+#include <limits>
+#include <cctype>
 
 class RPN {
 
@@ -33,14 +35,53 @@ class RPN {
             }
         };
 
-        static void doOperations(std::string input);
+        class ExceptionErrorExpression : public std::exception {
+            virtual const char* what() const throw() {
+                return "Error: there is an error in the expression";
+            }
+        };
 
-        int addition(int n1, int n2) const { return n1 + n2; }
-        int subtraction(int n1, int n2) const { return n1 - n2; }
-        int multiplication(int n1, int n2) const { return n1 * n2; }
-        int division(int n1, int n2) const { 
-            if (n1 == 0 || n2 == 0)
-                return 0;
+        class ExceptionDivisionbyZero : public std::exception {
+            virtual const char* what() const throw() {
+                return "Error: division by 0 is impossible";
+            }
+        };
+
+        class ExceptionNotInt: public std::exception {
+            virtual const char* what() const throw() {
+                return "Error: the result is not an integer";
+            }
+        };
+
+        static void doOperations(std::string input);
+        bool isOperator(char c) const;
+        bool isWhitespace(const std::string& str) const;
+
+        long addition(int n1, int n2) const {
+            if (n1 > std::numeric_limits<int>::max() - n2)
+                throw ExceptionNotInt();
+            else if (n1 < std::numeric_limits<int>::min() - n2)
+                throw ExceptionNotInt();
+            return n1 + n2; 
+        }
+        long subtraction(int n1, int n2) const {
+            if (n1 > std::numeric_limits<int>::max() + n2)
+                throw ExceptionNotInt();
+            else if (n1 < std::numeric_limits<int>::min() + n2)
+                throw ExceptionNotInt();
+            return n1 - n2;
+        }
+        long multiplication(int n1, int n2) const {
+            if (n1 > std::numeric_limits<int>::max() / n2)
+                throw ExceptionNotInt();
+            else if (n1 < std::numeric_limits<int>::min() / n2)
+                throw ExceptionNotInt();
+            return n1 * n2;
+        }
+        long division(int n1, int n2) const {
+            if (n2 == 0) {
+                throw ExceptionDivisionbyZero();
+            }
             return n1 / n2;
         }       
 
@@ -50,7 +91,7 @@ class RPN {
         void resolve(std::string input);
 
     private:
-        typedef int (RPN::*f)( int n1, int n2 ) const;
+        typedef long (RPN::*f)( int n1, int n2 ) const;
         f fct_ptr[4];
         std::stack<int> _s;
 };

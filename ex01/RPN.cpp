@@ -1,5 +1,4 @@
 #include "RPN.hpp"
-#include <cctype>
 
 void RPN::doOperations(std::string input) {
     
@@ -7,17 +6,19 @@ void RPN::doOperations(std::string input) {
         RPN ope;
         ope.parsing(input);
         ope.resolve(input);
+        if (ope._s.size() != 1)
+            throw ExceptionErrorExpression();
         std::cout << "resultat: " << ope._s.top() << std::endl;
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
     }
 }
 
-bool isOperator(char c) {
+bool RPN::isOperator(char c) const {
     return (c == '+' || c == '-' || c == '*' || c == '/');
 }
 
-bool isWhitespace(const std::string& str) {
+bool RPN::isWhitespace(const std::string& str) const {
 
     for (std::string::const_iterator it = str.begin() ; it != str.end() ; ++it) {
         if (!std::isspace(static_cast<unsigned char>(*it)))
@@ -42,15 +43,17 @@ void afficherStack(const std::stack<int>& maPile) {
 void RPN::resolve(std::string input) {
 
     char tab[4] = {'+', '-', '*', '/'};
-    int res = 0;
+    long int res = 0;
     for (size_t i = 0 ; i < input.size() ; i++) {
         if (isdigit(input[i])) {
             _s.push(input[i] - '0');
         }
         else if (isOperator(input[i])) {
-            int n2 = _s.top();
+            if (_s.size() < 2)
+                throw ExceptionErrorExpression();
+            long int n2 = _s.top();
             _s.pop();
-            int n1 = _s.top();
+            long int n1 = _s.top();
             _s.pop();
             for (int j = 0 ; j < 4 ; j++) {
                 if (tab[j] == input[i]) {
@@ -60,7 +63,6 @@ void RPN::resolve(std::string input) {
             }
         }
     }
-    // afficherStack(_s);
 }
 
 void RPN::parsing(std::string input) {
