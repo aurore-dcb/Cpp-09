@@ -1,5 +1,11 @@
 #include "PmergeMe.hpp"
 
+void printPairs(const std::vector<Pair>& pairs) {
+    for (size_t i = 0 ; i < pairs.size() ; i++) {
+        std::cout << pairs[i].first << "," << pairs[i].second << std::endl;
+    }
+}
+
 void PmergeMe::doSort(int argc, char **argv) {
 
     PmergeMe inst;
@@ -11,26 +17,28 @@ void PmergeMe::doSort(int argc, char **argv) {
         inst.createMainChain();
         inst.createPendChain();
 
+        printPairs(inst.pairs);
+
         //ajouter le premier element de pend au debut de main
         inst.main.insert(inst.main.begin(), inst.pend[0]);
 
         //ajouter chaque element en suivant la liste d'indice
         //et ajouter avec une recherche dichotomique qui porte sur les elements qui vont du debut a x(i) non compris
-        inst.JacobsthalSuite();
-        std::cout << std::endl;
+        // inst.JacobsthalSuite();
+        // std::cout << std::endl;
 
-        size_t i = 0;
-         std::cout << "main" << std::endl;
-        while (i < inst.main.size()) {
-            std::cout << inst.main[i] << ", ";
-            i++;
-        }
-        std::cout << std::endl << "pend" << std::endl;
-        i = 0;
-        while (i < inst.pend.size()) {
-            std::cout << inst.pend[i] << ", ";
-            i++;
-        }
+        // size_t i = 0;
+        //  std::cout << "main" << std::endl;
+        // while (i < inst.main.size()) {
+        //     std::cout << inst.main[i] << ", ";
+        //     i++;
+        // }
+        // std::cout << std::endl << "pend" << std::endl;
+        // i = 0;
+        // while (i < inst.pend.size()) {
+        //     std::cout << inst.pend[i] << ", ";
+        //     i++;
+        // }
     } catch (const std::exception& e) {
         std::cerr << "Error." << std::endl;
     }
@@ -109,7 +117,7 @@ void PmergeMe::orderPairs() {
     }
 }
 
-void PmergeMe::parseInput(int argc, char **argv) {//, std::vector<Pair>& pairs, std::vector<int>& pend) {
+void PmergeMe::parseInput(int argc, char **argv) {
     int i = 1;
     Pair newPair;
     while (i < argc) {
@@ -161,25 +169,26 @@ int PmergeMe::jacobsthal(int n) {
 
 void PmergeMe::JacobsthalSuite() {
 
-    (void)main;
     size_t N = 3;
     size_t i = jacobsthal(N) - 1;
     size_t back = jacobsthal(N - 1) - 1;
     bool quit = false;
 
-    while (1) {
-        while (i > back) {
-            while (i >= pend.size()) {
-                quit = true;
+    if (pend.size() > 1) {
+        while (1) {
+            while (i > back) {
+                while (i >= pend.size()) {
+                    quit = true;
+                    i--;
+                }
+                std::cout << i + 1 << ", ";
                 i--;
             }
-            std::cout << i + 1<< ", ";
-            i--;
+            if (quit)
+                return;
+            N++;
+            i = jacobsthal(N) - 1;
+            back = jacobsthal(N - 1) - 1;
         }
-        if (quit)
-            return;
-        N++;
-        i = jacobsthal(N) - 1;
-        back = jacobsthal(N - 1) - 1;
     }
 }

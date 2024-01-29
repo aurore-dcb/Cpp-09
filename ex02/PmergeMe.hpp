@@ -22,6 +22,8 @@ class PmergeMe {
         }
 
         static void doSort(int argc, char **argv);
+
+    private:
         void merge(int left, int middle, int right);
         void mergeSort(int left, int right);
         void sortBySecond();
@@ -32,8 +34,6 @@ class PmergeMe {
         int jacobsthal(int n);
         void JacobsthalSuite();
 
-
-    private:
 
     private:
         std::vector<Pair> pairs;
