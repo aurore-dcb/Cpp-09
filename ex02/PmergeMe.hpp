@@ -27,12 +27,14 @@ class PmergeMe {
         void merge(int left, int middle, int right);
         void mergeSort(int left, int right);
         void sortBySecond();
-        void orderPairs();
         void parseInput(int argc, char **argv);
-        void createMainChain();
-        void createPendChain();
+        void createChain();
         int jacobsthal(int n);
         void JacobsthalSuite();
+
+        int rechercheDichotomique(int max, int n);
+
+        int findMax(int y);
 
 
     private:

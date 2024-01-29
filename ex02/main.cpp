@@ -4,7 +4,8 @@
 
 int main(int argc, char **argv) {
     
-    PmergeMe::doSort(argc, argv);
+    if (argc >= 3)
+        PmergeMe::doSort(argc, argv);
 }
 
 

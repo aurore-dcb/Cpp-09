@@ -14,31 +14,37 @@ void PmergeMe::doSort(int argc, char **argv) {
         inst.parseInput(argc, argv);
         inst.sortBySecond();
 
-        inst.createMainChain();
-        inst.createPendChain();
-
-        printPairs(inst.pairs);
+        inst.createChain();
 
         //ajouter le premier element de pend au debut de main
         inst.main.insert(inst.main.begin(), inst.pend[0]);
 
+        size_t i = 0;
+        std::cout << "main" << std::endl;
+        while (i < inst.main.size() && i < 10) {
+            std::cout << inst.main[i] << ", ";
+            i++;
+        }
+        std::cout << std::endl << "pend" << std::endl;
+        i = 0;
+        while (i < inst.pend.size()) {
+            std::cout << inst.pend[i] << ", ";
+            i++;
+        }
+        std::cout << std::endl;
+        printPairs(inst.pairs);
+
         //ajouter chaque element en suivant la liste d'indice
         //et ajouter avec une recherche dichotomique qui porte sur les elements qui vont du debut a x(i) non compris
-        // inst.JacobsthalSuite();
+        inst.JacobsthalSuite();
         // std::cout << std::endl;
 
-        // size_t i = 0;
-        //  std::cout << "main" << std::endl;
-        // while (i < inst.main.size()) {
-        //     std::cout << inst.main[i] << ", ";
-        //     i++;
-        // }
-        // std::cout << std::endl << "pend" << std::endl;
-        // i = 0;
-        // while (i < inst.pend.size()) {
-        //     std::cout << inst.pend[i] << ", ";
-        //     i++;
-        // }
+        i = 0;
+        std::cout << "main" << std::endl;
+        while (i < inst.main.size()) {
+            std::cout << inst.main[i] << ", ";
+            i++;
+        }
     } catch (const std::exception& e) {
         std::cerr << "Error." << std::endl;
     }
@@ -109,14 +115,6 @@ void PmergeMe::sortBySecond() {
     mergeSort(0, pairs.size() - 1);
 }
 
-void PmergeMe::orderPairs() {
-    for (size_t i = 0 ; i < pairs.size() ; i++) {
-        if (pairs[i].first > pairs[i].second) {
-            std::swap(pairs[i].first, pairs[i].second);
-        }
-    }
-}
-
 void PmergeMe::parseInput(int argc, char **argv) {
     int i = 1;
     Pair newPair;
@@ -134,21 +132,21 @@ void PmergeMe::parseInput(int argc, char **argv) {
         }
         i++;
     }
-    orderPairs();
+    for (size_t i = 0 ; i < pairs.size() ; i++) {
+        if (pairs[i].first > pairs[i].second) {
+            std::swap(pairs[i].first, pairs[i].second);
+        }
+    }
 }
 
-void PmergeMe::createMainChain() {
+void PmergeMe::createChain() {
 
     size_t i = 0;
     while (i < pairs.size()) {
         main.insert(main.begin(), pairs[i].second);
         i++;
     }
-}
-
-void PmergeMe::createPendChain() {
-
-    size_t i = 0;
+    i = 0;
     while (i < pairs.size()) {
         if (pairs[i].first == -1)
             break;
@@ -167,6 +165,24 @@ int PmergeMe::jacobsthal(int n) {
     }
 }
 
+int PmergeMe::findMax(int y) {
+
+    int indice = pairs.size() - 1 - y;
+    // std::cout << "paire: " << pairs[indice].first << ", " << pairs[indice].second << std::endl;
+    int n = pairs[indice].second;
+    std::cout << "n: " << n << std::endl; 
+    size_t i = 0;
+    while (i < main.size()) {
+        if (main[i] == n) {
+            // std::cout << "max: " << i - 1 << std::endl; 
+            return i - 1;
+        }
+        i++; 
+    }
+    std::cout << "ret 0: " << std::endl; 
+    return (0);
+}
+
 void PmergeMe::JacobsthalSuite() {
 
     size_t N = 3;
@@ -180,8 +196,13 @@ void PmergeMe::JacobsthalSuite() {
                 while (i >= pend.size()) {
                     quit = true;
                     i--;
+                    if (back == pend.size() - 1)
+                        return;
                 }
-                std::cout << i + 1 << ", ";
+                std::cout << "pend[i]: " << pend[i] << std::endl;
+                int max = findMax(i);
+                // int max = main.size() - 1;
+                main.insert(main.begin() + rechercheDichotomique(max, pend[i]), pend[i]);
                 i--;
             }
             if (quit)
@@ -191,4 +212,19 @@ void PmergeMe::JacobsthalSuite() {
             back = jacobsthal(N - 1) - 1;
         }
     }
+}
+
+int PmergeMe::rechercheDichotomique(int max, int n) {
+    
+    int min = 0;
+    if (n > main[max])
+        return max + 1;
+    while (min < max) {
+        int middle = (min + max) / 2;
+        if (n <= main[middle])
+            max = middle;
+        else
+            min = middle + 1;
+    }
+    return min;
 }
