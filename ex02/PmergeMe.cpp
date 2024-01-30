@@ -19,34 +19,34 @@ void PmergeMe::doSort(int argc, char **argv) {
         //ajouter le premier element de pend au debut de main
         inst.main.insert(inst.main.begin(), inst.pend[0]);
 
-        size_t i = 0;
-        std::cout << "main" << std::endl;
-        while (i < inst.main.size() && i < 10) {
-            std::cout << inst.main[i] << ", ";
-            i++;
-        }
-        std::cout << std::endl << "pend" << std::endl;
-        i = 0;
-        while (i < inst.pend.size()) {
-            std::cout << inst.pend[i] << ", ";
-            i++;
-        }
-        std::cout << std::endl;
-        printPairs(inst.pairs);
+        // size_t i = 0;
+        // std::cout << "main" << std::endl;
+        // while (i < inst.main.size() && i < 10) {
+        //     std::cout << inst.main[i] << ", ";
+        //     i++;
+        // }
+        // std::cout << std::endl << "pend" << std::endl;
+        // i = 0;
+        // while (i < inst.pend.size()) {
+        //     std::cout << inst.pend[i] << ", ";
+        //     i++;
+        // }
+        // std::cout << std::endl;
+        // printPairs(inst.pairs);
 
         //ajouter chaque element en suivant la liste d'indice
         //et ajouter avec une recherche dichotomique qui porte sur les elements qui vont du debut a x(i) non compris
         inst.JacobsthalSuite();
         // std::cout << std::endl;
 
-        i = 0;
+        size_t i = 0;
         std::cout << "main" << std::endl;
-        while (i < inst.main.size()) {
+        while (i < inst.main.size() && i < 30) {
             std::cout << inst.main[i] << ", ";
             i++;
         }
     } catch (const std::exception& e) {
-        std::cerr << "Error." << std::endl;
+        std::cerr << "Error" << std::endl;
     }
 }
 
@@ -115,12 +115,21 @@ void PmergeMe::sortBySecond() {
     mergeSort(0, pairs.size() - 1);
 }
 
+bool PmergeMe::isDouble(int n) {
+
+    for (std::vector<Pair>::iterator it = pairs.begin(); it != pairs.end(); ++it) {
+        if (n == it->first || n == it->second)
+            return true;
+    }
+    return false;
+}
+
 void PmergeMe::parseInput(int argc, char **argv) {
     int i = 1;
     Pair newPair;
     while (i < argc) {
         int a = std::stoi(argv[i]);
-        if (a < 0)
+        if (isDouble(a) || a < 0)
             throw std::exception();
         if (i == argc - 1 && (argc - 1) % 2 != 0) {
             pend.insert(pend.begin(), a);
@@ -168,19 +177,24 @@ int PmergeMe::jacobsthal(int n) {
 int PmergeMe::findMax(int y) {
 
     int indice = pairs.size() - 1 - y;
-    // std::cout << "paire: " << pairs[indice].first << ", " << pairs[indice].second << std::endl;
     int n = pairs[indice].second;
-    std::cout << "n: " << n << std::endl; 
     size_t i = 0;
     while (i < main.size()) {
         if (main[i] == n) {
-            // std::cout << "max: " << i - 1 << std::endl; 
             return i - 1;
         }
         i++; 
     }
-    std::cout << "ret 0: " << std::endl; 
     return (0);
+}
+
+bool PmergeMe::isInPair(int n) {
+
+    for (std::vector<Pair>::iterator it = pairs.begin(); it != pairs.end(); ++it) {
+        if (n == it->first)
+            return true;
+    }
+    return false;
 }
 
 void PmergeMe::JacobsthalSuite() {
@@ -199,9 +213,11 @@ void PmergeMe::JacobsthalSuite() {
                     if (back == pend.size() - 1)
                         return;
                 }
-                std::cout << "pend[i]: " << pend[i] << std::endl;
-                int max = findMax(i);
-                // int max = main.size() - 1;
+                int max;
+                if (!isInPair(pend[i]))
+                    max = main.size() - 1;
+                else
+                    max = findMax(i);
                 main.insert(main.begin() + rechercheDichotomique(max, pend[i]), pend[i]);
                 i--;
             }

@@ -35,6 +35,8 @@ class PmergeMe {
         int rechercheDichotomique(int max, int n);
 
         int findMax(int y);
+        bool isInPair(int n);
+        bool isDouble(int n);
 
 
     private:
