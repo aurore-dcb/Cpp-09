@@ -1,11 +1,5 @@
 #include "PmergeMe.hpp"
 
-void printPairs(const std::vector<Pair>& pairs) {
-    for (size_t i = 0 ; i < pairs.size() ; i++) {
-        std::cout << pairs[i].first << "," << pairs[i].second << std::endl;
-    }
-}
-
 void PmergeMe::displayBefore(int argc, char **argv) const {
 
     int i = 1;
@@ -39,30 +33,26 @@ void PmergeMe::doSort(int argc, char **argv) {
     PmergeMe inst;
 
     try {
-        std::chrono::high_resolution_clock::time_point start_time;
-        std::chrono::high_resolution_clock::time_point end_time;
-        std::chrono::high_resolution_clock::time_point start_time2;
-        std::chrono::high_resolution_clock::time_point end_time2;
         
         // vector
-        start_time = std::chrono::high_resolution_clock::now();
+        clock_t start_time = clock();
         
         inst.parseInput(argc, argv);
         inst.mergeSort(0, inst.pairs.size() - 1);
         inst.createChain();
         inst.main.insert(inst.main.begin(), inst.pend[0]);
         inst.JacobsthalSuite();
-        end_time = std::chrono::high_resolution_clock::now();
+        clock_t end_time = clock();
 
         // deque
-        start_time2 = std::chrono::high_resolution_clock::now();
+        clock_t start_time2 = clock();
 
         inst.parseInput2(argc, argv);
         inst.mergeSort2(0, inst.pairs2.size() - 1);
         inst.createChain2();
         inst.main2.insert(inst.main2.begin(), inst.pend2[0]);
         inst.JacobsthalSuite2();
-        end_time2 = std::chrono::high_resolution_clock::now();
+        clock_t end_time2 = clock();
 
         std::cout << "Before: ";
         inst.displayBefore(argc, argv);
@@ -70,10 +60,10 @@ void PmergeMe::doSort(int argc, char **argv) {
         inst.displayAfter();
 
         // time
-        std::chrono::nanoseconds::rep duration_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
-        std::cout << "Time to process a range of " << inst.main.size() << " elements with std::vector : " << duration_ns << " ns." << std::endl;
-        std::chrono::nanoseconds::rep duration_ns2 = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time2 - start_time2).count();
-        std::cout << "Time to process a range of " << inst.main.size() << " elements with std::deque  : " << duration_ns2 << " ns." << std::endl;
+        double duration_ms = (double)(end_time - start_time) / CLOCKS_PER_SEC * 1000.0;
+        std::cout << "Time to process a range of " << inst.main.size() << " elements with std::vector : " << duration_ms << " ms." << std::endl;
+        double duration_ms2 = (double)(end_time2 - start_time2) / CLOCKS_PER_SEC * 1000.0;
+        std::cout << "Time to process a range of " << inst.main.size() << " elements with std::deque  : " << duration_ms2 << " ms." << std::endl;
 
     } catch (const std::exception& e) {
         std::cerr << "Error" << std::endl;
@@ -192,7 +182,7 @@ void PmergeMe::parseInput(int argc, char **argv) {
     int i = 1;
     Pair newPair;
     while (i < argc) {
-        int a = std::stoi(argv[i]);
+        int a = atoi(argv[i]);
         if (isDouble(a) || a < 0)
             throw std::exception();
         if (i == argc - 1 && (argc - 1) % 2 != 0) {
@@ -216,7 +206,9 @@ void PmergeMe::parseInput2(int argc, char **argv) {
     int i = 1;
     Pair newPair;
     while (i < argc) {
-        int a = std::stoi(argv[i]);
+        int a = atoi(argv[i]);
+        if (i % 2 == 0 && atoi(argv[i - 1]) == a)
+            throw std::exception();
         if (isDouble2(a) || a < 0)
             throw std::exception();
         if (i == argc - 1 && (argc - 1) % 2 != 0) {
@@ -268,7 +260,7 @@ void PmergeMe::createChain2() {
     }
 }
 
-int PmergeMe::jacobsthal(int n) {
+int PmergeMe::jacobsthal(int n) const {
     if (n == 0) {
         return 0;
     } else if (n == 1) {
@@ -278,7 +270,7 @@ int PmergeMe::jacobsthal(int n) {
     }
 }
 
-int PmergeMe::findMax(int y) {
+int PmergeMe::findMax(int y) const {
 
     int indice = pairs.size() - 1 - y;
     int n = pairs[indice].second;
@@ -292,7 +284,7 @@ int PmergeMe::findMax(int y) {
     return (0);
 }
 
-int PmergeMe::findMax2(int y) {
+int PmergeMe::findMax2(int y) const {
 
     int indice = pairs2.size() - 1 - y;
     int n = pairs2[indice].second;

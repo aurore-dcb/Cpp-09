@@ -5,8 +5,8 @@
 #include <vector>
 #include <stdexcept>
 #include <ctime>
-#include <chrono>
 #include <deque>
+#include <cstdlib>
 
 struct Pair {
     int first;
@@ -29,26 +29,27 @@ class PmergeMe {
         void displayAfter() const;
 
     private:
-        void merge(int left, int middle, int right);
-        void mergeSort(int left, int right);
-        void parseInput(int argc, char **argv);
-        void createChain();
-        int jacobsthal(int n);
-        void JacobsthalSuite();
-        int rechercheDichotomique(int max, int n);
-        int findMax(int y);
-        bool isInPair(int n);
-        bool isDouble(int n);
+        int     jacobsthal(int n) const ;
 
-        void merge2(int left, int middle, int right);
-        void mergeSort2(int left, int right);
-        void parseInput2(int argc, char **argv);
-        void createChain2();
-        int findMax2(int y);
-        void JacobsthalSuite2();
-        int rechercheDichotomique2(int max, int n);
-        bool isInPair2(int n);
-        bool isDouble2(int n);
+        void    merge(int left, int middle, int right);
+        void    mergeSort(int left, int right);
+        void    parseInput(int argc, char **argv);
+        void    createChain();
+        void    JacobsthalSuite();
+        int     findMax(int y) const ;
+        int     rechercheDichotomique(int max, int n);
+        bool    isInPair(int n);
+        bool    isDouble(int n);
+
+        void    merge2(int left, int middle, int right);
+        void    mergeSort2(int left, int right);
+        void    parseInput2(int argc, char **argv);
+        void    createChain2();
+        void    JacobsthalSuite2();
+        int     findMax2(int y) const ;
+        int     rechercheDichotomique2(int max, int n);
+        bool    isInPair2(int n);
+        bool    isDouble2(int n);
 
     private:
         std::vector<Pair> pairs;
