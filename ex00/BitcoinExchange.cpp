@@ -39,7 +39,6 @@ bool BitcoinExchange::parseData( void ) {
         std::string line;
         getline(infile, line);
         if (line != "date,exchange_rate") {
-            infile.close();
             throw BitcoinExchange::ExceptionDataCorrupted();
         }
         while (getline(infile, line)) {
@@ -47,8 +46,6 @@ bool BitcoinExchange::parseData( void ) {
                 throw BitcoinExchange::ExceptionDataCorrupted();
             }
             std::string date = line.substr(0, line.find(","));
-            if (!dateFormat(date))
-                throw BitcoinExchange::ExceptionDataCorrupted();
             std::string value = line.substr(line.find(",") + 1, line.size() - 1);
             std::stringstream ss(value);
             double valueDouble;
@@ -59,7 +56,6 @@ bool BitcoinExchange::parseData( void ) {
         }
         return true;
     }
-    infile.close();
     throw BitcoinExchange::ExceptionDataCorrupted();
 }
 
@@ -78,6 +74,8 @@ bool BitcoinExchange::valueFormat(std::string value) {
         } else
             return false;
     }
+    if (pts > 1)
+        return false;
     return true;
 }
 
@@ -89,7 +87,6 @@ void BitcoinExchange::parseInfile(char *infile) {
         getline(stream, line);
         if (line != "date | value") {
             std::cout << "Error: first line of input file must be \033[3mdate | value\033[0m." << std::endl;
-            stream.close();
             return ;
         }
         while (getline(stream, line)) {
@@ -100,7 +97,7 @@ void BitcoinExchange::parseInfile(char *infile) {
                 if (!dateFormat(date))
                     std::cout << "Error: bad input => " << line << std::endl;
                 else {
-                    std::string value = line.substr(line.find(" | ") + 3, line.size() - 1);
+                    std::string value = line.substr(line.find(" | ") + 3, line.size() - line.find(" | ") - 3);
                     if (!valueFormat(value))
                         std::cout << "Error: bad input => " << line << std::endl;
                     else {
@@ -109,7 +106,7 @@ void BitcoinExchange::parseInfile(char *infile) {
                         ss >> valueDouble;
                         if (valueDouble < 0) {
                             std::cout << "Error: not a positive number." << std::endl;
-                        } else if (valueDouble > 100)
+                        } else if (valueDouble > 1000)
                             std::cout << "Error: too large a number." << std::endl;
                         else {
                             searchRate(date, valueDouble);
@@ -118,7 +115,6 @@ void BitcoinExchange::parseInfile(char *infile) {
                 }
             }
         }
-        stream.close();
         return;
     }
     throw std::ios_base::failure("Error: Unable to open the file");

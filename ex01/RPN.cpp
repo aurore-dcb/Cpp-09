@@ -8,7 +8,7 @@ void RPN::doOperations(std::string input) {
         ope.resolve(input);
         if (ope._s.size() != 1)
             throw ExceptionErrorExpression();
-        std::cout << "resultat: " << ope._s.top() << std::endl;
+        std::cout << ope._s.top() << std::endl;
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
     }
@@ -25,19 +25,6 @@ bool RPN::isWhitespace(const std::string& str) const {
             return false;
     }
     return true;
-}
-
-void afficherStack(const std::stack<int>& maPile) {
-    std::stack<int> pileTemporaire = maPile;
-
-    std::cout << "Contenu de la pile : ";
-
-    while (!pileTemporaire.empty()) {
-        std::cout << pileTemporaire.top() << " ";
-        pileTemporaire.pop();
-    }
-
-    std::cout << std::endl;
 }
 
 void RPN::resolve(std::string input) {

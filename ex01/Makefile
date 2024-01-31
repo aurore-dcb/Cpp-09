@@ -6,7 +6,7 @@ SRC =	main.cpp \
 OBJ		= ${SRC:%.cpp=objects/%.o}
 
 CC		= c++
-FLAGS	= -Wall -Wextra -Werror -std=c++98 -g3
+FLAGS	= -Wall -Wextra -Werror -std=c++98
 
 ${NAME}: ${OBJ} *.hpp
 		 ${CC} ${FLAGS} -o ${NAME} ${OBJ}

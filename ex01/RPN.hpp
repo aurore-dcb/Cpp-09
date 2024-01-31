@@ -47,35 +47,17 @@ class RPN {
             }
         };
 
-        class ExceptionNotInt: public std::exception {
-            virtual const char* what() const throw() {
-                return "Error: the result is not an integer";
-            }
-        };
-
         static void doOperations(std::string input);
         bool isOperator(char c) const;
         bool isWhitespace(const std::string& str) const;
 
         long addition(int n1, int n2) const {
-            if (n1 > std::numeric_limits<int>::max() - n2)
-                throw ExceptionNotInt();
-            else if (n1 < std::numeric_limits<int>::min() - n2)
-                throw ExceptionNotInt();
             return n1 + n2; 
         }
         long subtraction(int n1, int n2) const {
-            if (n1 > std::numeric_limits<int>::max() + n2)
-                throw ExceptionNotInt();
-            else if (n1 < std::numeric_limits<int>::min() + n2)
-                throw ExceptionNotInt();
             return n1 - n2;
         }
         long multiplication(int n1, int n2) const {
-            if (n1 > std::numeric_limits<int>::max() / n2)
-                throw ExceptionNotInt();
-            else if (n1 < std::numeric_limits<int>::min() / n2)
-                throw ExceptionNotInt();
             return n1 * n2;
         }
         long division(int n1, int n2) const {
