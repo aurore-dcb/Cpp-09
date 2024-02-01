@@ -35,6 +35,7 @@ class BitcoinExchange {
         void parseInfile( char *infile );
         void searchRate( std::string date, float value );
 
+        bool doubleDate(std::string date);
         bool validDate( std::string date );
         bool isdigitRange(std::string date, size_t inf, size_t sup);
         bool dateFormat(std::string date);

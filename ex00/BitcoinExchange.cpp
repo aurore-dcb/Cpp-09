@@ -32,6 +32,22 @@ bool BitcoinExchange::dateFormat(std::string date) {
     return true;
 }
 
+bool BitcoinExchange::doubleDate(std::string date) {
+
+    std::map<std::string, float>::iterator it = _data.begin();
+    std::map<std::string, float>::iterator ite = _data.end();
+    for (it = _data.begin() ; it != ite ; ++it) {
+        if (it->first == date)
+            return false;
+    }
+    if (_data.size() > 0) {
+        std::map<std::string, float>::reverse_iterator last = _data.rbegin();
+        if (!isMoreRecentDate(date, last->first))
+            return false;
+    }
+    return true;
+}
+
 bool BitcoinExchange::parseData( void ) {
 
     std::ifstream infile("data.csv");
@@ -46,6 +62,8 @@ bool BitcoinExchange::parseData( void ) {
                 throw BitcoinExchange::ExceptionDataCorrupted();
             }
             std::string date = line.substr(0, line.find(","));
+            if (!doubleDate(date))
+                 throw BitcoinExchange::ExceptionDataCorrupted();
             std::string value = line.substr(line.find(",") + 1, line.size() - 1);
             std::stringstream ss(value);
             double valueDouble;
@@ -120,6 +138,7 @@ void BitcoinExchange::parseInfile(char *infile) {
     throw std::ios_base::failure("Error: Unable to open the file");
 }
 
+// true si data est plus recent que input
 bool BitcoinExchange::isMoreRecentDate(std::string data, std::string input) {
 
     int i;
